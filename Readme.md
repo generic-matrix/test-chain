@@ -1,30 +1,22 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
 <!-- TABLE OF CONTENTS -->
-# About The Project
+### About The Project
 
 > This is a blockchain project from scratch , using the custom made blockchain have created a cryptocurrency. 
 
-# The project features:
+### The project features:
 * P2P connections to create a blockchain
 
-# To install 
+### To install 
 Run 
 ```
 npm install .
 ```
-# To Run test
+### To Run test
 ```
 npm run test
 ```
 
-# How to use
+### How to use
 You can open two terminal 
 
 ```
@@ -47,7 +39,7 @@ curl --location --request POST 'http://<host>:<port>/mine' \
 }'
 ```
 
-# Functional Requirements
+### Functional Requirements
 * To create a distributed and decentrilized blockchain 
 * To implement POW algo
 * To use SHA256 algo to generate hash
