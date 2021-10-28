@@ -8,10 +8,15 @@ const Websocket = require("ws");
 const P2P_PORT = process.env.P2P_PORT || 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(",") : []
 const BlockChain = require("../blockchain");
+const MESSAGE_TYPES = {
+    chain : 'CHAIN',
+    transaction : 'TRANSACTION'
+};
 
 class P2pServer{
-    constructor(blockchain){
+    constructor(blockchain,transactionPool){
         this.blockchain=blockchain;
+        this.transactionPool=transactionPool;
         this.sockets=[];
     }
 
@@ -50,11 +55,17 @@ class P2pServer{
 
     messageHandler(socket){
         socket.on('message',message=>{
-            const new_chain=JSON.parse(message);
-            //call the replacechain function
-            let blockchain = new BlockChain();
-            blockchain.chain=new_chain;
-            this.blockchain.replaceChain(blockchain);
+            const data=JSON.parse(message);
+            switch(data.type){
+                case MESSAGE_TYPES.chain:
+                    let blockchain = new BlockChain();
+                    blockchain.chain=data.chain;
+                    this.blockchain.replaceChain(blockchain);
+                    break;
+                case MESSAGE_TYPES.transaction:
+                    this.transactionPool.updateOrAddTransactions(data.transaction);
+                    break;
+            }
         });
     }
 
@@ -66,7 +77,15 @@ class P2pServer{
     }
 
     SendChain(socket){
-        socket.send(JSON.stringify(this.blockchain.chain));
+        socket.send(JSON.stringify({type:MESSAGE_TYPES.chain,chain:this.blockchain.chain}));
+    }
+
+    sendTransaction(socket,t){
+        socket.send(JSON.stringify({type:MESSAGE_TYPES.transaction,transaction:t}));
+    }
+
+    broadcastTransaction(transaction){
+        this.sockets.forEach(socket => this.sendTransaction(socket,transaction));
     }
 }
 

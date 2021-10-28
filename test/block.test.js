@@ -1,5 +1,5 @@
 const { exportAllDeclaration } = require("@babel/types");
-const Block = require("./block.js");
+const Block = require("../blockchain/block.js");
 
 describe('Block',()=>{
     let data,lastBlock,block;
