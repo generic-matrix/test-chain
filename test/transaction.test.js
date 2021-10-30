@@ -1,3 +1,4 @@
+const { MINING_REWARD } = require("../blockchain/config");
 const Wallet = require("../wallet/index");
 const Transaction = require("../wallet/transaction");
 
@@ -61,5 +62,15 @@ describe('Update the transaction and check if the new transaction is verified or
     it('Updating the transaction to amount>balance and the new transaction object must be undefined',()=>{
         transaction = transaction.update(wallet,recepient,10000);
         expect(transaction).toEqual(undefined);
+    });
+
+});
+
+describe('Create a reward transaction',()=>{
+    beforeEach(()=>{
+        transaction = Transaction.RewardTransaction(wallet,Wallet.blockchainWallet());
+    });
+    it(`It rewards the miner's wallet`,()=>{
+        expect(transaction.outputs.find(output=>output.address===wallet.publickey).amount).toEqual(MINING_REWARD);
     });
 });

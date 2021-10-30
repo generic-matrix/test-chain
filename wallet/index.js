@@ -20,7 +20,8 @@ class Wallet{
         return this.keyPair.sign(dataHash);
     }
 
-    CreateTransaction(recipient,amount,transactionPool){
+    CreateTransaction(recipient,amount,blockchain,transactionPool){
+        this.balance = this.calculateBalance(blockchain);
         if(amount>this.balance){
             console.log(`Amount ${amount} exceceds the current balance ${this.balance}`);
             return;
@@ -34,6 +35,45 @@ class Wallet{
             transactionPool.updateOrAddTransactions(transaction);
         }
         return transaction;
+    }
+
+    static blockchainWallet(){
+        const blockchainWallet = new this();
+        blockchainWallet.address = "blockchain-wallet";
+        return blockchainWallet;
+    }
+
+    calculateBalance(blockchain){
+        let balance = this.balance;
+        let transactions = [];
+        // Get data elements of each blocks
+        blockchain.chain.forEach(block=>{
+            block.data.forEach(data=>{
+                transactions.push(data);
+            });
+        });
+        // Filter by input.address === public key
+        const walletTransactions = transactions.filter(transaction=> transaction.input.address===this.publickey);
+        // Compare and get latest transactions
+        let startTime = 0;
+        if(walletTransactions.length>0){
+            const recentTransaction = walletTransactions.reduce((prev,current)=>prev.input.timestamp>current.input.timestamp?prev:current);
+            // get the balance from latest transaction
+            balance = recentTransaction.outputs.find(output=>output.address===this.publickey).amount;
+            // get the starttime from latest transaction
+            startTime = recentTransaction.input.timestamp;
+        }
+        // foreach transaction if input.timestamp>starttime for each outputs add amount for the pubkey
+        transactions.forEach(transaction => {
+            if(transaction.input.timestamp>startTime){
+                transaction.outputs.find(output=>{
+                    if(output.balance === this.publickey){
+                        balance = balance + output.amount;
+                    }
+                });
+            }
+        });
+        return balance;
     }
         
 }

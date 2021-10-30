@@ -22,4 +22,14 @@ describe('TransactionPool',()=>{
         tp.updateOrAddTransactions(NewTxn);
         expect(JSON.stringify(tp.transactions.find(t=> t.id === NewTxn.id))).not.toEqual(OldTxn);
     });
+
+    it('Does it Gets verified transactions',()=>{
+        expect(JSON.stringify(tp.validTransactions())).toEqual(JSON.stringify(tp.transactions));
+    });
+
+    it('Clear all the transactions',()=>{
+        tp.clear()
+        expect(tp.transactions).toEqual([]);
+    });
+
 });
